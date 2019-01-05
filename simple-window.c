@@ -5,6 +5,9 @@
 #include <X11/Xlib.h>
 
 
+void draw_in_window();
+
+
 int main()
 {
     Display* display;
@@ -47,6 +50,27 @@ int main()
                               win_width, win_height,
                               win_border_width,
                               black_pixel, white_pixel);
+    // graphics context
+    GC gc;
+
+    /** XGCValues values = CapButt | JoinBevel; */
+    XGCValues values = {
+        .cap_style = CapButt,
+        .join_style = JoinBevel
+    };
+    unsigned long valuemask = GCCapStyle | GCJoinStyle;
+    
+    gc = XCreateGC(display, win, valuemask, &values);
+    if (gc < 0) {
+        fprintf(stderr, "XCreateGC: \n");
+    }
+
+    XSetForeground(display, gc, white_pixel);
+    XSetBackground(display, gc, black_pixel);
+    XSetFillStyle(display, gc, FillSolid);
+    XSetLineAttributes(display, gc, 2, LineSolid, CapRound, JoinRound);
+
+    XDrawLine(display, win, gc, 20, 20, 40, 100);
 
     XMapWindow(display, win);
 
@@ -55,3 +79,5 @@ int main()
     sleep(4);
     XCloseDisplay(display);
 }
+
+
